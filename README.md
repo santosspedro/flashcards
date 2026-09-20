@@ -1,6 +1,6 @@
 # Atlas Prático
 
-50 flashcards visuais para estudo da Avaliação Teórica e Prática 1 de Ciências Morfofisiológicas: sistemas tegumentar, articular, ósseo e muscular. O baralho inclui vistas sem legenda dos modelos de crânio fotografados no laboratório.
+67 flashcards visuais para estudo da Avaliação Teórica e Prática 1 de Ciências Morfofisiológicas: sistemas tegumentar, articular, ósseo e muscular. O baralho inclui modelos do laboratório para crânio, pé, fêmur e fíbula, com as legendas ocultadas durante a pergunta.
 
 ## Publicar no GitHub Pages
 

@@ -8,7 +8,7 @@
   <title>Atlas Prático — Morfofisiologia</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101820'/%3E%3Cpath d='M32 13v38M17 25h30M20 39h24' stroke='%23f2c14e' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23e85d4a'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://commons.wikimedia.org">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
   <header class="topbar">
@@ -36,11 +36,11 @@
     </section>
 
     <nav class="filters" aria-label="Filtrar sistema">
-      <button class="filter active" data-system="todos">Todos <span id="count-todos">50</span></button>
+      <button class="filter active" data-system="todos">Todos <span id="count-todos">67</span></button>
       <button class="filter" data-system="tegumentar">Tegumentar <span id="count-tegumentar">7</span></button>
       <button class="filter" data-system="articular">Articular <span id="count-articular">3</span></button>
-      <button class="filter" data-system="osseo">Ósseo <span id="count-osseo">32</span></button>
-      <button class="filter" data-system="muscular">Muscular <span id="count-muscular">8</span></button>
+      <button class="filter" data-system="osseo">Ósseo <span id="count-osseo">47</span></button>
+      <button class="filter" data-system="muscular">Muscular <span id="count-muscular">10</span></button>
     </nav>
 
     <section class="study-grid">
@@ -53,6 +53,7 @@
           <div class="image-loader" id="imageLoader">Carregando atlas…</div>
           <div class="media-frame">
             <img id="anatomyImage" alt="Ilustração anatômica para identificação">
+            <div class="mask-layer" id="maskLayer" aria-hidden="true"></div>
             <div class="target" id="target" aria-label="Ponto a identificar"><span>?</span></div>
           </div>
           <p class="view-label" id="viewLabel">Vista anterior</p>
@@ -109,6 +110,6 @@
   </main>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

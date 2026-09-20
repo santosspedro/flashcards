@@ -5,7 +5,16 @@ const ASSETS = {
   joint: "assets/joint-openstax.jpg",
   skullFront: "assets/lab-skull-front.jpg",
   skullLateral: "assets/lab-skull-lateral.jpg",
-  skullPosterior: "assets/lab-skull-posterior.jpg"
+  skullPosterior: "assets/lab-skull-posterior.jpg",
+  foot: "assets/lab-foot.jpg",
+  fibula: "assets/lab-fibula.jpg",
+  femur: "assets/lab-femur.jpg"
+};
+
+const MASKS = {
+  foot: [[26,23,25,7],[64,23,21,7],[67,34,27,7],[68,48,27,7],[37,57,24,8],[24,64,16,8],[32,68,18,8]],
+  femur: [[13,18,28,6],[42,18,17,6],[64,15,25,6],[52,44,43,7],[23,82,59,7]],
+  fibula: [[55,13,27,7],[47,40,47,8],[50,81,26,7]]
 };
 
 const cards = [
@@ -43,6 +52,22 @@ const cards = [
   { id:"o31", system:"osseo", answer:"Corpo do esterno", note:"Porção longa e central do esterno.", image:"skeleton", x:47, y:24, view:"Esterno · vista anterior" },
   { id:"o32", system:"osseo", answer:"Processo xifoide", aliases:["processo xifóide","xifoide","xifóide"], note:"Pequena extremidade inferior do esterno.", image:"skeleton", x:47, y:28, view:"Esterno · vista anterior" },
 
+  { id:"o33", system:"osseo", answer:"Calcâneo", aliases:["calcaneo"], note:"Maior osso do tarso; forma a base do calcanhar.", image:"foot", masks:"foot", x:43, y:25, view:"Modelo do laboratório · pé" },
+  { id:"o34", system:"osseo", answer:"Tálus", aliases:["talus"], note:"Osso do tarso que se articula com tíbia e fíbula.", image:"foot", masks:"foot", x:60, y:25, view:"Modelo do laboratório · pé" },
+  { id:"o35", system:"osseo", answer:"Navicular", aliases:["osso navicular"], note:"Osso medial do tarso, anterior ao tálus.", image:"foot", masks:"foot", x:64, y:35, view:"Modelo do laboratório · pé" },
+  { id:"o36", system:"osseo", answer:"Metatarsais", aliases:["ossos metatarsais","metatarso"], note:"Cinco ossos longos entre o tarso e as falanges.", image:"foot", masks:"foot", x:64, y:49, view:"Modelo do laboratório · pé" },
+  { id:"o37", system:"osseo", answer:"Falanges proximais", aliases:["falange proximal"], note:"Primeiro segmento ósseo dos dedos do pé, junto aos metatarsais.", image:"foot", masks:"foot", x:50, y:59, view:"Modelo do laboratório · pé" },
+  { id:"o38", system:"osseo", answer:"Falanges médias", aliases:["falange media","falange média","falanges medias"], note:"Segmento intermediário dos dedos II a V.", image:"foot", masks:"foot", x:49, y:66, view:"Modelo do laboratório · pé" },
+  { id:"o39", system:"osseo", answer:"Falanges distais", aliases:["falange distal"], note:"Segmento ósseo mais distante, na ponta dos dedos.", image:"foot", masks:"foot", x:41, y:63, view:"Modelo do laboratório · pé" },
+  { id:"o40", system:"osseo", answer:"Cabeça do fêmur", aliases:["cabeca do femur","cabeça femoral"], note:"Extremidade esférica proximal que se articula com o acetábulo.", image:"femur", masks:"femur", x:59, y:12, view:"Modelo do laboratório · fêmur" },
+  { id:"o41", system:"osseo", answer:"Colo do fêmur", aliases:["colo femoral","colo do femur"], note:"Região estreita entre a cabeça e o corpo do fêmur.", image:"femur", masks:"femur", x:50, y:16, view:"Modelo do laboratório · fêmur" },
+  { id:"o42", system:"osseo", answer:"Trocânter maior", aliases:["trocanter","trocanter maior","trocânter"], note:"Grande projeção lateral da extremidade proximal do fêmur.", image:"femur", masks:"femur", x:39, y:17, view:"Modelo do laboratório · fêmur" },
+  { id:"o43", system:"osseo", answer:"Corpo do fêmur", aliases:["diafise do femur","diáfise do fêmur"], note:"Diáfise longa do fêmur.", image:"femur", masks:"femur", x:47, y:43, view:"Modelo do laboratório · fêmur" },
+  { id:"o44", system:"osseo", answer:"Epífise distal do fêmur", aliases:["epifise distal do femur","epífise distal"], note:"Extremidade inferior do fêmur, onde ficam os côndilos.", image:"femur", masks:"femur", x:49, y:88, view:"Modelo do laboratório · fêmur" },
+  { id:"o45", system:"osseo", answer:"Epífise proximal da fíbula", aliases:["epifise proximal da fibula","cabeça da fíbula","cabeca da fibula"], note:"Extremidade superior da fíbula, próxima ao joelho.", image:"fibula", masks:"fibula", x:50, y:12, view:"Modelo do laboratório · fíbula" },
+  { id:"o46", system:"osseo", answer:"Corpo da fíbula", aliases:["corpo da fibula","diafise da fibula","diáfise da fíbula"], note:"Diáfise delgada da fíbula.", image:"fibula", masks:"fibula", x:43, y:42, view:"Modelo do laboratório · fíbula" },
+  { id:"o47", system:"osseo", answer:"Epífise distal da fíbula", aliases:["epifise distal da fibula","maleolo lateral","maléolo lateral"], note:"Extremidade inferior da fíbula, formando o maléolo lateral.", image:"fibula", masks:"fibula", x:43, y:86, view:"Modelo do laboratório · fíbula" },
+
   { id:"m1", system:"muscular", answer:"Deltoide", aliases:["deltóide"], note:"Músculo que recobre o ombro e participa da abdução do braço.", image:"muscles", x:15.5, y:26, view:"Vista anterior · figura esquerda" },
   { id:"m2", system:"muscular", answer:"Peitoral maior", note:"Músculo superficial amplo da parede anterior do tórax.", image:"muscles", x:25, y:27, view:"Vista anterior · figura esquerda" },
   { id:"m3", system:"muscular", answer:"Bíceps braquial", aliases:["biceps","biceps braquial","bíceps"], note:"Músculo anterior do braço, importante na flexão do cotovelo.", image:"muscles", x:35, y:32, view:"Vista anterior · figura esquerda" },
@@ -51,6 +76,8 @@ const cards = [
   { id:"m6", system:"muscular", answer:"Trapézio", aliases:["trapezio"], note:"Músculo superficial triangular da região posterior do pescoço e dorso.", image:"muscles", x:78, y:22, view:"Vista posterior · figura direita" },
   { id:"m7", system:"muscular", answer:"Tríceps braquial", aliases:["triceps","triceps braquial","tríceps"], note:"Principal extensor do cotovelo, localizado posteriormente no braço.", image:"muscles", x:88, y:31, view:"Vista posterior · figura direita" },
   { id:"m8", system:"muscular", answer:"Glúteo máximo", aliases:["gluteo maximo","glúteo maior","gluteo maior"], note:"Grande músculo superficial da região glútea.", image:"muscles", x:76, y:50, view:"Vista posterior · figura direita" },
+  { id:"m9", system:"muscular", answer:"Esternocleidomastoideo", aliases:["esternocleidomastóideo","esternocleidomastoideu"], note:"Músculo superficial do pescoço que liga esterno e clavícula ao processo mastoide.", image:"muscles", x:24, y:17, view:"Vista anterior · figura esquerda" },
+  { id:"m10", system:"muscular", answer:"Grande dorsal", aliases:["latissimo do dorso","latíssimo do dorso","dorsal"], note:"Músculo amplo e superficial da região posterolateral do tronco.", image:"muscles", x:82, y:36, view:"Vista posterior · figura direita" },
 
   { id:"t1", system:"tegumentar", answer:"Epiderme", note:"Camada mais superficial da pele, formada por epitélio estratificado.", image:"skin", x:14, y:18, view:"Corte da pele" },
   { id:"t2", system:"tegumentar", answer:"Derme", note:"Camada conjuntiva sob a epiderme; contém vasos, nervos e anexos.", image:"skin", x:17, y:46, view:"Corte da pele" },
@@ -111,6 +138,14 @@ function renderCard() {
   els.image.style.opacity = ".15";
   els.image.src = ASSETS[card.image];
   els.image.closest(".media-frame").className = `media-frame ${card.crop || ""}`.trim();
+  const maskLayer = $("maskLayer");
+  maskLayer.innerHTML = "";
+  (MASKS[card.masks] || []).forEach(([x,y,w,h]) => {
+    const mask = document.createElement("span");
+    mask.className = "answer-mask";
+    Object.assign(mask.style, { left:`${x}%`, top:`${y}%`, width:`${w}%`, height:`${h}%` });
+    maskLayer.appendChild(mask);
+  });
   els.image.alt = `Ilustração do ${labels[card.system].toLowerCase()} com um ponto para identificar`;
   els.target.style.left = `${card.x}%`;
   els.target.style.top = `${card.y}%`;
@@ -143,6 +178,7 @@ function reveal(correctGuess = null) {
   els.input.disabled = true;
   els.check.disabled = true;
   els.reveal.disabled = true;
+  $("maskLayer").innerHTML = "";
   updateStats();
 }
 
