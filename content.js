@@ -83,8 +83,8 @@ const topics = {
   }
 };
 
-function flashcards(topic, entries, model = false) {
-  return entries.map(([key, prompt, answer, note]) => ({ id: key, topic, prompt, answer, note, model }));
+function flashcards(topic, entries) {
+  return entries.map(([key, prompt, answer, note]) => ({ id: key, topic, prompt, answer, note }));
 }
 
 const deck = [
@@ -133,31 +133,6 @@ const deck = [
     ["l-edema", "O que pode ocorrer se a drenagem linfática estiver comprometida?", "Acúmulo de líquido intersticial", "A drenagem insuficiente pode contribuir para edema."]
   ])
 ];
-
-const practical = flashcards("digestorio", [
-  ["p-esofago", "No modelo geral, qual tubo desce da faringe até o estômago?", "Esôfago", "Siga o tubo atrás da via aérea do pescoço até a entrada do estômago."],
-  ["p-estomago", "Qual órgão em forma de bolsa tem pregas internas e continua no duodeno?", "Estômago", "As pregas são visíveis na peça aberta. A saída do estômago é a região pilórica."],
-  ["p-figado", "Qual grande órgão escuro aparece acima da vesícula biliar?", "Fígado", "A vesícula se aloja junto à face inferior do fígado."],
-  ["p-vesicula", "Qual reservatório se encontra junto ao fígado e se comunica com as vias biliares?", "Vesícula biliar", "Armazena e concentra bile."],
-  ["p-duodeno", "Qual segmento em C abraça a cabeça do pâncreas?", "Duodeno", "É a primeira parte do intestino delgado."],
-  ["p-duodeno-final", "Qual parte do duodeno sobe antes de se continuar com o jejuno?", "Parte ascendente do duodeno", "É a quarta porção. A transição ocorre na flexura duodenojejunal."],
-  ["p-colédoco", "Que ducto leva bile ao duodeno?", "Ducto colédoco", "Compare seu trajeto com o ducto pancreático principal no modelo detalhado."],
-  ["p-ducto", "Qual estrutura clara ramificada atravessa o pâncreas em direção ao duodeno?", "Ducto pancreático principal", "Ele recebe secreções de ductos menores do pâncreas."],
-  ["p-corpo", "Qual porção do pâncreas se estende entre a cabeça e a cauda?", "Corpo do pâncreas", "Na peça, ele ocupa a parte alongada central do órgão."],
-  ["p-cauda", "Qual extremidade do pâncreas se aproxima do hilo do baço?", "Cauda do pâncreas", "A cabeça fica junto ao duodeno."],
-  ["p-baco", "Qual órgão arroxeado aparece ao lado da cauda pancreática?", "Baço", "É um órgão linfoide associado ao sangue."],
-  ["p-esplenica", "Qual artéria tortuosa acompanha a borda superior do pâncreas em direção ao baço?", "Artéria esplênica", "É um ramo do tronco celíaco."],
-  ["p-ceco", "Qual bolsa recebe o íleo e dá origem ao apêndice?", "Ceco", "O ceco se continua com o cólon ascendente."],
-  ["p-apendice", "Qual projeção estreita pende do ceco na peça geral?", "Apêndice vermiforme", "A foto também usa o nome apêndice cecal."],
-  ["p-sigmoide", "Qual segmento liga o cólon descendente ao reto?", "Cólon sigmoide", "É o trecho curvo antes do reto."],
-  ["p-reto", "Qual segmento final aparece entre o sigmoide e o canal anal?", "Reto", "Na peça aberta, fica logo acima do ânus."],
-  ["p-colon", "Como se chama a sequência dos quatro segmentos do cólon?", "Ascendente, transverso, descendente e sigmoide", "Na peça geral, o cólon contorna as alças do intestino delgado."],
-  ["p-delgado", "Que partes do intestino delgado formam a maior parte das alças dentro da moldura do cólon?", "Jejuno e íleo", "O duodeno é o primeiro segmento e se encontra junto ao pâncreas."],
-  ["p-celiaco", "Qual tronco arterial curto dá origem à artéria esplênica?", "Tronco celíaco", "Na peça detalhada, o ramo que se dirige ao baço é a artéria esplênica."],
-  ["p-veia-esplenica", "Qual vaso azul sai do baço e acompanha o pâncreas?", "Veia esplênica", "Ela drena o baço e passa posteriormente ao pâncreas."],
-  ["p-mesenterica", "Qual artéria desce em direção ao mesentério e irriga grande parte do intestino delgado?", "Artéria mesentérica superior", "Localize também a veia mesentérica superior ao lado dela no modelo."],
-  ["p-gastroduodenal", "Qual artéria passa atrás da porção superior do duodeno?", "Artéria gastroduodenal", "Ela emite ramos que irrigam regiões do duodeno e da cabeça do pâncreas."]
-], true);
 
 function questions(topic, entries) {
   return entries.map(([key, prompt, answer, distractors, note]) => ({ id: key, topic, prompt, answer, options: [answer, ...distractors], note }));

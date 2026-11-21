@@ -1,0 +1,51 @@
+"use strict";
+
+const visualQuestions = [
+  ["p-esofago", "digestorio", 293, 101, "Esôfago", "Conduz o bolo alimentar da faringe ao estômago por peristaltismo."],
+  ["p-estomago", "digestorio", 356, 175, "Estômago", "Armazena e mistura o alimento. O meio ácido e a pepsina iniciam a digestão de proteínas."],
+  ["p-figado", "digestorio", 172, 145, "Fígado", "Produz a bile, que ajuda na digestão e absorção de gorduras."],
+  ["p-vesicula", "digestorio", 210, 179, "Vesícula biliar", "Armazena e concentra a bile e a libera em direção ao duodeno."],
+  ["p-ceco", "digestorio", 191, 363, "Ceco", "Recebe o conteúdo do íleo e o encaminha ao cólon ascendente."],
+  ["p-apendice", "digestorio", 198, 398, "Apêndice vermiforme", "Contém tecido linfoide que participa da vigilância imunológica intestinal."],
+  ["p-sigmoide", "digestorio", 345, 385, "Cólon sigmoide", "Conduz as fezes do cólon descendente ao reto."],
+  ["p-reto", "digestorio", 315, 426, "Reto", "Armazena temporariamente as fezes antes da evacuação."],
+  ["p-colon", "digestorio", 301, 246, "Cólon transverso", "Conduz o conteúdo entre as flexuras do cólon e participa da absorção de água e eletrólitos."],
+  ["p-delgado", "digestorio", 258, 314, "Alças do intestino delgado (jejuno e íleo)", "São locais de digestão e absorção. O íleo terminal também absorve sais biliares e vitamina B12 ligada ao fator intrínseco."],
+  ["p-duodeno", "pancreas", 128, 250, "Duodeno", "Recebe o quimo, a bile e a secreção pancreática, permitindo a neutralização da acidez e a digestão de nutrientes."],
+  ["p-duodeno-final", "pancreas", 217, 302, "Porção ascendente do duodeno", "Conduz o conteúdo até a flexura duodenojejunal, onde começa o jejuno."],
+  ["p-colédoco", "pancreas", 193, 169, "Ducto colédoco", "Conduz a bile ao duodeno."],
+  ["p-ducto", "pancreas", 345, 209, "Ducto pancreático principal", "Transporta secreção pancreática rica em enzimas e bicarbonato até o duodeno."],
+  ["p-corpo", "pancreas", 319, 222, "Corpo do pâncreas", "Contém tecido exócrino que produz secreção digestiva e ilhotas que liberam hormônios como insulina e glucagon."],
+  ["p-cauda", "pancreas", 437, 197, "Cauda do pâncreas", "É a extremidade próxima ao baço. Assim como o restante da glândula, tem funções exócrina e endócrina."],
+  ["p-baco", "pancreas", 500, 185, "Baço", "Filtra o sangue, remove hemácias envelhecidas e participa da resposta imune."],
+  ["p-esplenica", "pancreas", 401, 129, "Artéria esplênica", "Leva sangue ao baço e dá ramos para o pâncreas e o estômago."],
+  ["p-celiaco", "pancreas", 312, 127, "Tronco celíaco", "Distribui sangue arterial para o intestino anterior e órgãos associados, incluindo estômago, fígado e baço."],
+  ["p-veia-esplenica", "pancreas", 414, 168, "Veia esplênica", "Drena o baço e se une à veia mesentérica superior para formar a veia porta."],
+  ["p-mesenterica", "pancreas", 323, 322, "Artéria mesentérica superior", "Irriga grande parte do intestino delgado e a porção proximal do intestino grosso."],
+  ["p-gastroduodenal", "pancreas", 225, 179, "Artéria gastroduodenal", "Dá ramos que irrigam partes do duodeno, da cabeça pancreática e do estômago."],
+  ["p-ad", "coracao", 199, 218, "Átrio direito", "Recebe o retorno venoso sistêmico e envia sangue ao ventrículo direito."],
+  ["p-vd", "coracao", 245, 306, "Ventrículo direito", "Ejeta sangue para a circulação pulmonar."],
+  ["p-ae", "coracao", 382, 222, "Átrio esquerdo", "Recebe das veias pulmonares o sangue oxigenado e o envia ao ventrículo esquerdo."],
+  ["p-ve", "coracao", 355, 321, "Ventrículo esquerdo", "Ejeta sangue na aorta para a circulação sistêmica."],
+  ["p-tricuspide", "coracao", 219, 247, "Valva tricúspide", "Permite a passagem do átrio direito para o ventrículo direito e limita o refluxo durante a contração ventricular."],
+  ["p-mitral", "coracao", 370, 257, "Valva mitral", "Permite o enchimento do ventrículo esquerdo e limita o refluxo ao átrio esquerdo durante a contração ventricular."],
+  ["p-aorta", "coracao", 370, 80, "Aorta", "Distribui o sangue ejetado pelo ventrículo esquerdo à circulação sistêmica."],
+  ["p-pulmonar", "coracao", 275, 133, "Tronco pulmonar", "Conduz o sangue do ventrículo direito até as artérias pulmonares."],
+  ["p-arteria", "vasos", 78, 153, "Artéria", "Conduz sangue para fora do coração. A camada muscular desenvolvida ajuda a suportar a pressão e ajustar o calibre."],
+  ["p-veia", "vasos", 306, 203, "Veia", "Conduz sangue de volta ao coração. A parede costuma ser mais fina e o lúmen mais amplo que o de uma artéria comparável."],
+  ["p-capilar", "vasos", 352, 343, "Capilar sanguíneo", "Permite trocas de gases, nutrientes e outras substâncias entre o sangue e os tecidos."],
+  ["p-linfonodos", "linfatico", 235, 160, "Linfonodo axilar", "Filtra a linfa e favorece o encontro entre antígenos e células da resposta imune."],
+  ["p-timo", "linfatico", 302, 158, "Timo", "É o local onde os linfócitos T amadurecem e passam por seleção."],
+  ["p-baco-linfatico", "linfatico", 344, 214, "Baço", "Filtra o sangue, participa da resposta imune e remove hemácias envelhecidas."],
+  ["p-ducto-toracico", "linfatico", 304, 191, "Ducto torácico", "Devolve à circulação venosa a linfa da maior parte do corpo."]
+];
+
+const practical = visualQuestions.map(([id, plate, x, y, answer, note]) => ({
+  id,
+  topic: plate === "pancreas" ? "digestorio" : plate,
+  prompt: "Qual é a estrutura indicada e qual é sua função?",
+  answer,
+  note,
+  plate,
+  point: [x, y]
+}));

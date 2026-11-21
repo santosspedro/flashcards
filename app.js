@@ -89,7 +89,7 @@ function renderSummary() {
 
 function sourceLinks() {
   return `<details class="panel"><summary>Fotos dos modelos anatômicos</summary>
-    <p>Responda pela descrição e depois confira a estrutura na foto legendada.</p>
+    <p>Compare os esquemas com as fotos legendadas dos modelos usados como referência.</p>
     <ul>${photos.map(([name, id]) => `<li><a href="https://chatgpt.com/library?file_id=${id}&amp;account_id=personal" target="_blank" rel="noopener">${name}</a></li>`).join("")}</ul>
   </details>`;
 }
@@ -101,7 +101,7 @@ function renderItem(moveFocus = false) {
     const title = finished ? "Rodada concluída" : mode === "review" ? "Nenhum item para revisar" : "Sem exercícios neste assunto";
     const message = finished
       ? `${round.queue.length} itens estudados.${round.quizzes ? ` ${round.correct} de ${round.quizzes} respostas corretas no quiz.` : ""}`
-      : mode === "review" ? "Os erros do quiz e os cartões marcados para rever aparecem aqui." : "Selecione Todos os assuntos para acessar a prática com os modelos digestórios.";
+      : mode === "review" ? "Os erros do quiz e os cartões marcados para rever aparecem aqui." : "Escolha outro assunto para praticar.";
     study.innerHTML = `<article class="panel"><h2 tabindex="-1">${title}</h2><p>${message}</p>
       ${finished && (mode !== "review" || pending().length) ? '<button class="primary" id="restart">Nova rodada</button>' : ""}</article>`;
     study.querySelector("#restart")?.addEventListener("click", () => { start(); study.querySelector("h2")?.focus(); });
@@ -109,11 +109,21 @@ function renderItem(moveFocus = false) {
     study.innerHTML = `<article class="panel">
       <p class="position">${topics[item.topic].title} · ${round.index + 1} de ${round.queue.length}</p>
       <h2 tabindex="-1">${item.prompt}</h2>
-      <div id="response"></div></article>${mode === "practical" || item.model ? sourceLinks() : ""}`;
+      ${item.plate ? plateView(item) : ""}
+      <div id="response"></div></article>${item.plate && item.topic === "digestorio" ? sourceLinks() : ""}`;
+    if (item.plate) paintPlate(study.querySelector("canvas"), item);
     if (item.options) renderQuiz(item);
     else renderCard(item);
   }
   if (moveFocus) study.querySelector("h2").focus();
+}
+
+function plateView(item) {
+  const plate = plates[item.plate];
+  return `<figure class="practical-figure">
+    <canvas width="900" height="720" role="img" aria-label="${plate.description}">${plate.description}</canvas>
+    <figcaption>${plate.title}</figcaption>
+  </figure>`;
 }
 
 function next() {
@@ -123,10 +133,16 @@ function next() {
 
 function renderCard(item) {
   const response = study.querySelector("#response");
-  response.innerHTML = '<p class="muted">Tente responder em voz alta antes de revelar.</p><button class="primary" id="flip">Revelar resposta</button>';
-  response.querySelector("#flip").addEventListener("click", () => {
-    response.innerHTML = `<div class="feedback"><h3 tabindex="-1">${item.answer}</h3><p>${item.note}</p></div>
-      <div class="actions"><button id="again">Preciso rever</button><button class="primary" id="known">Lembrei</button></div>`;
+  response.innerHTML = `<form class="recall-form">
+    ${item.plate ? '<label for="guess-name">Nome da estrutura</label><input id="guess-name" autocomplete="off"><label for="guess-function">Função</label><textarea id="guess-function" rows="2"></textarea>' : '<p class="muted">Tente responder em voz alta antes de revelar.</p>'}
+    <button class="primary" id="flip">Revelar resposta</button>
+  </form>`;
+  response.querySelector("form").addEventListener("submit", event => {
+    event.preventDefault();
+    response.querySelectorAll("input, textarea").forEach(field => { field.readOnly = true; });
+    response.querySelector("#flip").remove();
+    response.insertAdjacentHTML("beforeend", `<div class="feedback"><h3 tabindex="-1">${item.answer}</h3><p>${item.note}</p></div>
+      <div class="actions"><button id="again">Preciso rever</button><button class="primary" id="known">${item.plate ? "Acertei nome e função" : "Lembrei"}</button></div>`);
     response.querySelector("h3").focus();
     response.querySelector("#again").addEventListener("click", () => { record(item, true); next(); });
     response.querySelector("#known").addEventListener("click", () => { record(item, false); next(); });
