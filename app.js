@@ -1,255 +1,160 @@
-const ASSETS = {
-  skeleton: "assets/skeleton.png",
-  muscles: "assets/muscles.png",
-  skin: "assets/skin.png",
-  joint: "assets/joint-openstax.jpg",
-  skullFront: "assets/lab-skull-front.jpg",
-  skullLateral: "assets/lab-skull-lateral.jpg",
-  skullPosterior: "assets/lab-skull-posterior.jpg",
-  foot: "assets/lab-foot.jpg",
-  fibula: "assets/lab-fibula.jpg",
-  femur: "assets/lab-femur.jpg"
-};
+"use strict";
 
-const MASKS = {
-  foot: [[26,23,25,7],[64,23,21,7],[67,34,27,7],[68,48,27,7],[37,57,24,8],[24,64,16,8],[32,68,18,8]],
-  femur: [[13,18,28,6],[42,18,17,6],[64,15,25,6],[52,44,43,7],[23,82,59,7]],
-  fibula: [[55,13,27,7],[47,40,47,8],[50,81,26,7]]
-};
+const topicNav = document.querySelector("#topics");
+const modeNav = document.querySelector("#modes");
+const study = document.querySelector("#study");
+const status = document.querySelector("#status");
+const storageKey = "atlas-morfo-revisao-v1";
+const modes = { summary: "Resumos", cards: "Flashcards", quiz: "Quiz", practical: "Prática", review: "Revisar erros" };
+const items = [...deck, ...practical, ...quiz];
+const validIds = new Set(items.map(item => item.id));
 
-const cards = [
-  { id:"o1", system:"osseo", answer:"Crânio", aliases:["cranio"], note:"Conjunto de ossos que protege o encéfalo.", image:"skeleton", x:47, y:8, view:"Vista anterior" },
-  { id:"o2", system:"osseo", answer:"Clavícula", aliases:["clavicula"], note:"Osso alongado que liga o esterno à escápula.", image:"skeleton", x:56, y:18, view:"Vista anterior" },
-  { id:"o3", system:"osseo", answer:"Esterno", note:"Osso plano na linha mediana anterior do tórax.", image:"skeleton", x:47, y:21.5, view:"Vista anterior" },
-  { id:"o4", system:"osseo", answer:"Úmero", aliases:["umero"], note:"Osso longo do braço, entre ombro e cotovelo.", image:"skeleton", x:68, y:28, view:"Vista anterior" },
-  { id:"o5", system:"osseo", answer:"Rádio", aliases:["radio"], note:"Osso lateral do antebraço, no lado do polegar.", image:"skeleton", x:76, y:43, view:"Vista anterior" },
-  { id:"o6", system:"osseo", answer:"Fêmur", aliases:["femur"], note:"Maior osso do corpo; forma o esqueleto da coxa.", image:"skeleton", x:56, y:57, view:"Vista anterior" },
-  { id:"o7", system:"osseo", answer:"Patela", aliases:["rotula","rótula"], note:"Osso sesamoide localizado anteriormente ao joelho.", image:"skeleton", x:53.5, y:69, view:"Vista anterior" },
-  { id:"o8", system:"osseo", answer:"Tíbia", aliases:["tibia"], note:"Osso medial e mais robusto da perna.", image:"skeleton", x:51, y:79, view:"Vista anterior" },
-
-  { id:"o9", system:"osseo", answer:"Osso frontal", aliases:["frontal"], note:"Forma a testa e a porção anterior do teto das órbitas.", image:"skullFront", x:52, y:21, view:"Modelo do laboratório · vista anterior" },
-  { id:"o10", system:"osseo", answer:"Osso nasal", aliases:["nasal"], note:"Pequeno osso par que forma a ponte do nariz.", image:"skullFront", x:53, y:39, view:"Modelo do laboratório · vista anterior" },
-  { id:"o11", system:"osseo", answer:"Etmoide", aliases:["osso etmoide","etmóide","osso etmóide"], note:"Osso entre as órbitas que participa da cavidade nasal.", image:"skullFront", x:47, y:42, view:"Modelo do laboratório · vista anterior" },
-  { id:"o12", system:"osseo", answer:"Zigomático", aliases:["zigomatico","osso zigomatico","osso zigomático"], note:"Forma a proeminência da bochecha e parte da órbita.", image:"skullFront", x:32, y:45, view:"Modelo do laboratório · vista anterior" },
-  { id:"o13", system:"osseo", answer:"Maxila", note:"Osso da face que sustenta os dentes superiores.", image:"skullFront", x:57, y:49, view:"Modelo do laboratório · vista anterior" },
-  { id:"o14", system:"osseo", answer:"Mandíbula", aliases:["mandibula"], note:"Único osso móvel do crânio; sustenta os dentes inferiores.", image:"skullFront", x:57, y:59, view:"Modelo do laboratório · vista anterior" },
-  { id:"o15", system:"osseo", answer:"Osso parietal", aliases:["parietal"], note:"Forma grande parte das paredes laterais e do teto do crânio.", image:"skullLateral", x:64, y:41, view:"Modelo do laboratório · vista lateral" },
-  { id:"o16", system:"osseo", answer:"Osso temporal", aliases:["temporal"], note:"Osso lateral do crânio, ao redor da região da orelha.", image:"skullLateral", x:46, y:58, view:"Modelo do laboratório · vista lateral" },
-  { id:"o17", system:"osseo", answer:"Sutura coronal", note:"Une os ossos frontal e parietais.", image:"skullLateral", x:48, y:34, view:"Modelo do laboratório · vista lateral" },
-  { id:"o18", system:"osseo", answer:"Sutura sagital", note:"Une os dois ossos parietais na linha mediana.", image:"skullPosterior", x:28, y:25, view:"Modelo do laboratório · vista posterior" },
-  { id:"o19", system:"osseo", answer:"Sutura lambdoide", aliases:["sutura lambdóide"], note:"Une os ossos parietais ao osso occipital.", image:"skullPosterior", x:26, y:46, view:"Modelo do laboratório · vista posterior" },
-  { id:"o20", system:"osseo", answer:"Osso occipital", aliases:["occipital"], note:"Forma a região posterior e inferior do crânio.", image:"skullPosterior", x:32, y:53, view:"Modelo do laboratório · vista posterior" },
-  { id:"o21", system:"osseo", answer:"Escápula", aliases:["escapula"], note:"Osso plano da cintura escapular, localizado posteriormente ao tórax.", image:"skeleton", x:61, y:22, view:"Vista anterior" },
-  { id:"o22", system:"osseo", answer:"Ílio", aliases:["ilio"], note:"Porção superior e mais ampla do osso do quadril.", image:"skeleton", x:58, y:44, view:"Pelve · vista anterior" },
-  { id:"o23", system:"osseo", answer:"Púbis", aliases:["pubis"], note:"Porção anterior do osso do quadril, próxima à sínfise púbica.", image:"skeleton", x:51, y:49, view:"Pelve · vista anterior" },
-  { id:"o24", system:"osseo", answer:"Ísquio", aliases:["isquio"], note:"Porção posteroinferior do osso do quadril.", image:"skeleton", x:58, y:49, view:"Pelve · vista anterior" },
-  { id:"o25", system:"osseo", answer:"Vértebras cervicais", aliases:["cervicais","vertebras cervicais"], note:"Sete vértebras da região do pescoço.", image:"skeleton", x:47, y:16, view:"Coluna vertebral" },
-  { id:"o26", system:"osseo", answer:"Vértebras torácicas", aliases:["toracicas","vertebras toracicas"], note:"Doze vértebras que se articulam com as costelas.", image:"skeleton", x:47, y:31, view:"Coluna vertebral" },
-  { id:"o27", system:"osseo", answer:"Vértebras lombares", aliases:["lombares","vertebras lombares"], note:"Cinco vértebras robustas da região inferior do tronco.", image:"skeleton", x:47, y:40, view:"Coluna vertebral" },
-  { id:"o28", system:"osseo", answer:"Sacro", aliases:["osso sacro"], note:"Osso triangular formado pela fusão de vértebras sacrais.", image:"skeleton", x:47, y:45, view:"Coluna vertebral" },
-  { id:"o29", system:"osseo", answer:"Cóccix", aliases:["coccix"], note:"Segmento terminal da coluna vertebral.", image:"skeleton", x:47, y:47, view:"Coluna vertebral" },
-  { id:"o30", system:"osseo", answer:"Manúbrio do esterno", aliases:["manubrio","manubrio do esterno"], note:"Porção superior do esterno, articulada com as clavículas.", image:"skeleton", x:47, y:19.5, view:"Esterno · vista anterior" },
-  { id:"o31", system:"osseo", answer:"Corpo do esterno", note:"Porção longa e central do esterno.", image:"skeleton", x:47, y:24, view:"Esterno · vista anterior" },
-  { id:"o32", system:"osseo", answer:"Processo xifoide", aliases:["processo xifóide","xifoide","xifóide"], note:"Pequena extremidade inferior do esterno.", image:"skeleton", x:47, y:28, view:"Esterno · vista anterior" },
-
-  { id:"o33", system:"osseo", answer:"Calcâneo", aliases:["calcaneo"], note:"Maior osso do tarso; forma a base do calcanhar.", image:"foot", masks:"foot", x:43, y:25, view:"Modelo do laboratório · pé" },
-  { id:"o34", system:"osseo", answer:"Tálus", aliases:["talus"], note:"Osso do tarso que se articula com tíbia e fíbula.", image:"foot", masks:"foot", x:60, y:25, view:"Modelo do laboratório · pé" },
-  { id:"o35", system:"osseo", answer:"Navicular", aliases:["osso navicular"], note:"Osso medial do tarso, anterior ao tálus.", image:"foot", masks:"foot", x:64, y:35, view:"Modelo do laboratório · pé" },
-  { id:"o36", system:"osseo", answer:"Metatarsais", aliases:["ossos metatarsais","metatarso"], note:"Cinco ossos longos entre o tarso e as falanges.", image:"foot", masks:"foot", x:64, y:49, view:"Modelo do laboratório · pé" },
-  { id:"o37", system:"osseo", answer:"Falanges proximais", aliases:["falange proximal"], note:"Primeiro segmento ósseo dos dedos do pé, junto aos metatarsais.", image:"foot", masks:"foot", x:50, y:59, view:"Modelo do laboratório · pé" },
-  { id:"o38", system:"osseo", answer:"Falanges médias", aliases:["falange media","falange média","falanges medias"], note:"Segmento intermediário dos dedos II a V.", image:"foot", masks:"foot", x:49, y:66, view:"Modelo do laboratório · pé" },
-  { id:"o39", system:"osseo", answer:"Falanges distais", aliases:["falange distal"], note:"Segmento ósseo mais distante, na ponta dos dedos.", image:"foot", masks:"foot", x:41, y:63, view:"Modelo do laboratório · pé" },
-  { id:"o40", system:"osseo", answer:"Cabeça do fêmur", aliases:["cabeca do femur","cabeça femoral"], note:"Extremidade esférica proximal que se articula com o acetábulo.", image:"femur", masks:"femur", x:59, y:12, view:"Modelo do laboratório · fêmur" },
-  { id:"o41", system:"osseo", answer:"Colo do fêmur", aliases:["colo femoral","colo do femur"], note:"Região estreita entre a cabeça e o corpo do fêmur.", image:"femur", masks:"femur", x:50, y:16, view:"Modelo do laboratório · fêmur" },
-  { id:"o42", system:"osseo", answer:"Trocânter maior", aliases:["trocanter","trocanter maior","trocânter"], note:"Grande projeção lateral da extremidade proximal do fêmur.", image:"femur", masks:"femur", x:39, y:17, view:"Modelo do laboratório · fêmur" },
-  { id:"o43", system:"osseo", answer:"Corpo do fêmur", aliases:["diafise do femur","diáfise do fêmur"], note:"Diáfise longa do fêmur.", image:"femur", masks:"femur", x:47, y:43, view:"Modelo do laboratório · fêmur" },
-  { id:"o44", system:"osseo", answer:"Epífise distal do fêmur", aliases:["epifise distal do femur","epífise distal"], note:"Extremidade inferior do fêmur, onde ficam os côndilos.", image:"femur", masks:"femur", x:49, y:88, view:"Modelo do laboratório · fêmur" },
-  { id:"o45", system:"osseo", answer:"Epífise proximal da fíbula", aliases:["epifise proximal da fibula","cabeça da fíbula","cabeca da fibula"], note:"Extremidade superior da fíbula, próxima ao joelho.", image:"fibula", masks:"fibula", x:50, y:12, view:"Modelo do laboratório · fíbula" },
-  { id:"o46", system:"osseo", answer:"Corpo da fíbula", aliases:["corpo da fibula","diafise da fibula","diáfise da fíbula"], note:"Diáfise delgada da fíbula.", image:"fibula", masks:"fibula", x:43, y:42, view:"Modelo do laboratório · fíbula" },
-  { id:"o47", system:"osseo", answer:"Epífise distal da fíbula", aliases:["epifise distal da fibula","maleolo lateral","maléolo lateral"], note:"Extremidade inferior da fíbula, formando o maléolo lateral.", image:"fibula", masks:"fibula", x:43, y:86, view:"Modelo do laboratório · fíbula" },
-
-  { id:"m1", system:"muscular", answer:"Deltoide", aliases:["deltóide"], note:"Músculo que recobre o ombro e participa da abdução do braço.", image:"muscles", x:15.5, y:26, view:"Vista anterior · figura esquerda" },
-  { id:"m2", system:"muscular", answer:"Peitoral maior", note:"Músculo superficial amplo da parede anterior do tórax.", image:"muscles", x:25, y:27, view:"Vista anterior · figura esquerda" },
-  { id:"m3", system:"muscular", answer:"Bíceps braquial", aliases:["biceps","biceps braquial","bíceps"], note:"Músculo anterior do braço, importante na flexão do cotovelo.", image:"muscles", x:35, y:32, view:"Vista anterior · figura esquerda" },
-  { id:"m4", system:"muscular", answer:"Reto abdominal", aliases:["reto do abdomen","reto do abdômen"], note:"Músculo vertical da parede anterior do abdome.", image:"muscles", x:25.5, y:40, view:"Vista anterior · figura esquerda" },
-  { id:"m5", system:"muscular", answer:"Sartório", aliases:["sartorio"], note:"Músculo longo e oblíquo que cruza a face anterior da coxa.", image:"muscles", x:30.5, y:57, view:"Vista anterior · figura esquerda" },
-  { id:"m6", system:"muscular", answer:"Trapézio", aliases:["trapezio"], note:"Músculo superficial triangular da região posterior do pescoço e dorso.", image:"muscles", x:78, y:22, view:"Vista posterior · figura direita" },
-  { id:"m7", system:"muscular", answer:"Tríceps braquial", aliases:["triceps","triceps braquial","tríceps"], note:"Principal extensor do cotovelo, localizado posteriormente no braço.", image:"muscles", x:88, y:31, view:"Vista posterior · figura direita" },
-  { id:"m8", system:"muscular", answer:"Glúteo máximo", aliases:["gluteo maximo","glúteo maior","gluteo maior"], note:"Grande músculo superficial da região glútea.", image:"muscles", x:76, y:50, view:"Vista posterior · figura direita" },
-  { id:"m9", system:"muscular", answer:"Esternocleidomastoideo", aliases:["esternocleidomastóideo","esternocleidomastoideu"], note:"Músculo superficial do pescoço que liga esterno e clavícula ao processo mastoide.", image:"muscles", x:24, y:17, view:"Vista anterior · figura esquerda" },
-  { id:"m10", system:"muscular", answer:"Grande dorsal", aliases:["latissimo do dorso","latíssimo do dorso","dorsal"], note:"Músculo amplo e superficial da região posterolateral do tronco.", image:"muscles", x:82, y:36, view:"Vista posterior · figura direita" },
-
-  { id:"t1", system:"tegumentar", answer:"Epiderme", note:"Camada mais superficial da pele, formada por epitélio estratificado.", image:"skin", x:14, y:18, view:"Corte da pele" },
-  { id:"t2", system:"tegumentar", answer:"Derme", note:"Camada conjuntiva sob a epiderme; contém vasos, nervos e anexos.", image:"skin", x:17, y:46, view:"Corte da pele" },
-  { id:"t3", system:"tegumentar", answer:"Hipoderme", aliases:["tecido subcutaneo","tecido subcutâneo"], note:"Camada subcutânea rica em tecido adiposo.", image:"skin", x:18, y:80, view:"Corte da pele" },
-  { id:"t4", system:"tegumentar", answer:"Glândula sebácea", aliases:["glandula sebacea","sebacea","sebácea"], note:"Glândula associada ao folículo piloso que secreta sebo.", image:"skin", x:63, y:38, view:"Corte da pele" },
-  { id:"t5", system:"tegumentar", answer:"Glândula sudorípara", aliases:["glandula sudoripara","sudoripara","sudorípara"], note:"Glândula tubular enovelada responsável pela produção de suor.", image:"skin", x:80, y:64, view:"Corte da pele" },
-  { id:"t6", system:"tegumentar", answer:"Músculo eretor do pelo", aliases:["musculo eretor do pelo","eretor do pelo","musculo eretor"], note:"Feixe de músculo liso que provoca a ereção do pelo.", image:"skin", x:59, y:48, view:"Corte da pele" },
-  { id:"t7", system:"tegumentar", answer:"Tecido adiposo", aliases:["tecido subcutaneo","tecido subcutâneo"], note:"Tecido predominante da hipoderme, com reserva energética e isolamento térmico.", image:"skin", x:52, y:87, view:"Corte da pele" },
-
-  { id:"a1", system:"articular", answer:"Cartilagem articular", aliases:["cartilagem hialina"], note:"Revestimento azul-claro das extremidades ósseas; reduz o atrito e absorve impactos.", image:"joint", crop:"joint-detail", x:44, y:49, view:"Articulação sinovial · corte" },
-  { id:"a2", system:"articular", answer:"Cápsula articular", aliases:["capsula articular","capsula fibrosa","cápsula fibrosa"], note:"Camada fibrosa externa azul-acinzentada que envolve e estabiliza toda a articulação.", image:"joint", crop:"joint-detail", x:91, y:55, view:"Articulação sinovial · corte" },
-  { id:"a3", system:"articular", answer:"Cavidade articular", aliases:["cavidade sinovial","cavidade articular com liquido sinovial","cavidade articular com líquido sinovial"], note:"Espaço amarelado entre as cartilagens, preenchido por líquido sinovial.", image:"joint", crop:"joint-detail", x:61, y:55, view:"Articulação sinovial · corte" }
-];
-
-const labels = { osseo:"Sistema ósseo", muscular:"Sistema muscular", tegumentar:"Sistema tegumentar", articular:"Sistema articular" };
-const state = { system:"todos", queue:[], index:0, seen:0, right:0, streak:0, revealed:false, review:new Set(JSON.parse(localStorage.getItem("atlas-review") || "[]")) };
-
-const $ = id => document.getElementById(id);
-const els = {
-  image: $("anatomyImage"), loader: $("imageLoader"), target: $("target"), system: $("systemLabel"),
-  position: $("cardPosition"), view: $("viewLabel"), prompt: $("promptText"), input: $("answerInput"),
-  feedback: $("feedback"), kicker: $("feedbackKicker"), title: $("answerTitle"), note: $("answerNote"),
-  check: $("checkButton"), reveal: $("revealButton"), next: $("nextButton"), score: $("scoreValue"),
-  seen: $("seenStat"), right: $("rightStat"), review: $("reviewStat"), reviewBadge: $("reviewBadge"),
-  streak: $("streakLabel"), toast: $("toast")
-};
-
-function normalize(value) {
-  return value.trim().toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ");
+function loadReview() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey));
+    return new Set(Array.isArray(saved) ? saved.filter(id => validIds.has(id)) : []);
+  } catch {
+    return new Set();
+  }
 }
 
-function shuffle(list) {
+const review = loadReview();
+let topic = "all";
+let mode = "summary";
+let round;
+
+function shuffled(list) {
   const copy = [...list];
-  for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; }
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
   return copy;
 }
 
-function rebuildQueue(source) {
-  const pool = source || (state.system === "todos" ? cards : cards.filter(c => c.system === state.system));
-  state.queue = shuffle(pool);
-  state.index = 0;
-  renderCard();
+const matches = item => topic === "all" || item.topic === topic;
+const pending = () => items.filter(item => matches(item) && review.has(item.id));
+
+function record(item, needsReview) {
+  if (needsReview) review.add(item.id);
+  else review.delete(item.id);
+  try {
+    localStorage.setItem(storageKey, JSON.stringify([...review]));
+  } catch {
+    status.textContent = "A lista de revisão está disponível nesta sessão.";
+  }
+  modeNav.querySelector('[data-value="review"]').textContent = `Revisar erros (${pending().length})`;
 }
 
-function current() { return state.queue[state.index]; }
+function controls(nav, values, selected, change) {
+  nav.replaceChildren(...Object.entries(values).map(([value, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.value = value;
+    button.textContent = label;
+    button.setAttribute("aria-pressed", String(value === selected));
+    button.addEventListener("click", () => {
+      change(value);
+      renderMenus();
+      nav.querySelector(`[data-value="${value}"]`).focus();
+      start();
+    });
+    return button;
+  }));
+}
 
-function renderCard() {
-  const card = current();
-  if (!card) return;
-  state.revealed = false;
-  els.feedback.classList.add("hidden");
-  els.feedback.classList.remove("incorrect");
-  els.input.value = "";
-  els.input.disabled = false;
-  els.check.disabled = false;
-  els.reveal.disabled = false;
-  els.loader.style.display = "block";
-  els.image.style.opacity = ".15";
-  els.image.src = ASSETS[card.image];
-  els.image.closest(".media-frame").className = `media-frame ${card.crop || ""}`.trim();
-  const maskLayer = $("maskLayer");
-  maskLayer.innerHTML = "";
-  (MASKS[card.masks] || []).forEach(([x,y,w,h]) => {
-    const mask = document.createElement("span");
-    mask.className = "answer-mask";
-    Object.assign(mask.style, { left:`${x}%`, top:`${y}%`, width:`${w}%`, height:`${h}%` });
-    maskLayer.appendChild(mask);
+function renderMenus() {
+  controls(topicNav, { all: "Todos os assuntos", ...Object.fromEntries(Object.entries(topics).map(([id, data]) => [id, data.title])) }, topic, value => { topic = value; });
+  controls(modeNav, { ...modes, review: `Revisar erros (${pending().length})` }, mode, value => { mode = value; });
+}
+
+function start() {
+  if (mode === "summary") {
+    renderSummary();
+    return;
+  }
+  const pool = { cards: deck, practical, quiz, review: pending() }[mode].filter(matches);
+  round = { queue: shuffled(pool), index: 0, correct: 0, quizzes: 0 };
+  renderItem();
+}
+
+function renderSummary() {
+  study.innerHTML = Object.entries(topics)
+    .filter(([id]) => matches({ topic: id }))
+    .map(([, data]) => `<article class="panel"><h2>${data.title}</h2>
+      ${data.sections.map(([title, facts]) => `<h3>${title}</h3><ul>${facts.map(fact => `<li>${fact}</li>`).join("")}</ul>`).join("")}
+      <details><summary>Explique em voz alta</summary><p>${data.recall}</p></details>
+      <p class="muted">${data.source}</p></article>`).join("");
+}
+
+function sourceLinks() {
+  return `<details class="panel"><summary>Fotos dos modelos anatômicos</summary>
+    <p>Responda pela descrição e depois confira a estrutura na foto legendada.</p>
+    <ul>${photos.map(([name, id]) => `<li><a href="https://chatgpt.com/library?file_id=${id}&amp;account_id=personal" target="_blank" rel="noopener">${name}</a></li>`).join("")}</ul>
+  </details>`;
+}
+
+function renderItem(moveFocus = false) {
+  const item = round.queue[round.index];
+  if (!item) {
+    const finished = round.queue.length > 0;
+    const title = finished ? "Rodada concluída" : mode === "review" ? "Nenhum item para revisar" : "Sem exercícios neste assunto";
+    const message = finished
+      ? `${round.queue.length} itens estudados.${round.quizzes ? ` ${round.correct} de ${round.quizzes} respostas corretas no quiz.` : ""}`
+      : mode === "review" ? "Os erros do quiz e os cartões marcados para rever aparecem aqui." : "Selecione Todos os assuntos para acessar a prática com os modelos digestórios.";
+    study.innerHTML = `<article class="panel"><h2 tabindex="-1">${title}</h2><p>${message}</p>
+      ${finished && (mode !== "review" || pending().length) ? '<button class="primary" id="restart">Nova rodada</button>' : ""}</article>`;
+    study.querySelector("#restart")?.addEventListener("click", () => { start(); study.querySelector("h2")?.focus(); });
+  } else {
+    study.innerHTML = `<article class="panel">
+      <p class="position">${topics[item.topic].title} · ${round.index + 1} de ${round.queue.length}</p>
+      <h2 tabindex="-1">${item.prompt}</h2>
+      <div id="response"></div></article>${mode === "practical" || item.model ? sourceLinks() : ""}`;
+    if (item.options) renderQuiz(item);
+    else renderCard(item);
+  }
+  if (moveFocus) study.querySelector("h2").focus();
+}
+
+function next() {
+  round.index++;
+  renderItem(true);
+}
+
+function renderCard(item) {
+  const response = study.querySelector("#response");
+  response.innerHTML = '<p class="muted">Tente responder em voz alta antes de revelar.</p><button class="primary" id="flip">Revelar resposta</button>';
+  response.querySelector("#flip").addEventListener("click", () => {
+    response.innerHTML = `<div class="feedback"><h3 tabindex="-1">${item.answer}</h3><p>${item.note}</p></div>
+      <div class="actions"><button id="again">Preciso rever</button><button class="primary" id="known">Lembrei</button></div>`;
+    response.querySelector("h3").focus();
+    response.querySelector("#again").addEventListener("click", () => { record(item, true); next(); });
+    response.querySelector("#known").addEventListener("click", () => { record(item, false); next(); });
   });
-  els.image.alt = `Ilustração do ${labels[card.system].toLowerCase()} com um ponto para identificar`;
-  els.target.style.left = `${card.x}%`;
-  els.target.style.top = `${card.y}%`;
-  els.system.textContent = labels[card.system].toUpperCase();
-  els.position.textContent = `${state.index + 1} / ${state.queue.length}`;
-  els.view.textContent = card.view;
-  els.prompt.textContent = "Qual é a estrutura indicada?";
-  setTimeout(() => els.input.focus(), 80);
 }
 
-els.image.addEventListener("load", () => { els.loader.style.display = "none"; els.image.style.opacity = "1"; });
-els.image.addEventListener("error", () => { els.loader.textContent = "Não foi possível carregar a ilustração. Verifique sua conexão."; els.image.style.opacity = "0"; });
-
-function reveal(correctGuess = null) {
-  if (state.revealed) return;
-  const card = current();
-  state.revealed = true;
-  state.seen += 1;
-  const accepted = [card.answer, ...(card.aliases || [])].map(normalize);
-  const typed = normalize(els.input.value);
-  const isCorrect = correctGuess ?? (typed && accepted.includes(typed));
-  if (isCorrect) { state.right += 1; state.streak += 1; state.review.delete(card.id); }
-  else { state.streak = 0; state.review.add(card.id); }
-  localStorage.setItem("atlas-review", JSON.stringify([...state.review]));
-  els.feedback.classList.remove("hidden");
-  els.feedback.classList.toggle("incorrect", !isCorrect);
-  els.kicker.textContent = isCorrect ? "✓ RESPOSTA CORRETA" : (typed ? "RESPOSTA ESPERADA" : "RESPOSTA REVELADA");
-  els.title.textContent = card.answer;
-  els.note.textContent = card.note;
-  els.input.disabled = true;
-  els.check.disabled = true;
-  els.reveal.disabled = true;
-  $("maskLayer").innerHTML = "";
-  updateStats();
+function renderQuiz(item) {
+  const response = study.querySelector("#response");
+  const options = shuffled(item.options);
+  response.innerHTML = `<div class="options">${options.map(option => `<button type="button">${option}</button>`).join("")}</div>`;
+  const buttons = [...response.querySelectorAll("button")];
+  buttons.forEach((button, index) => button.addEventListener("click", () => {
+    if (button.disabled) return;
+    const correct = options[index] === item.answer;
+    round.quizzes++;
+    round.correct += Number(correct);
+    record(item, !correct);
+    buttons.forEach((choice, i) => {
+      choice.disabled = true;
+      if (options[i] === item.answer) choice.classList.add("correct");
+    });
+    if (!correct) button.classList.add("wrong");
+    response.insertAdjacentHTML("beforeend", `<div class="feedback"><h3 tabindex="-1">${correct ? "Resposta correta" : "Resposta correta: " + item.answer}</h3><p>${item.note}</p></div>
+      <button class="primary" id="next">Continuar</button>`);
+    response.querySelector("h3").focus();
+    response.querySelector("#next").addEventListener("click", next);
+  }));
 }
 
-function updateStats() {
-  const pct = state.seen ? Math.round((state.right / state.seen) * 100) : 0;
-  els.score.textContent = `${pct}%`;
-  els.seen.textContent = state.seen;
-  els.right.textContent = state.right;
-  els.review.textContent = state.review.size;
-  els.reviewBadge.textContent = state.review.size;
-  els.streak.textContent = `${state.streak} ${state.streak === 1 ? "sequência" : "sequência"}`;
-}
-
-function goNext() {
-  if (!state.revealed) reveal(null);
-  state.index += 1;
-  if (state.index >= state.queue.length) { state.queue = shuffle(state.queue); state.index = 0; showToast("Baralho embaralhado para uma nova rodada."); }
-  renderCard();
-}
-
-function showToast(message) {
-  els.toast.textContent = message;
-  els.toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
-}
-
-els.check.addEventListener("click", () => { if (!els.input.value.trim()) { showToast("Digite uma resposta antes de conferir."); els.input.focus(); return; } reveal(); });
-els.reveal.addEventListener("click", () => reveal(false));
-els.next.addEventListener("click", goNext);
-els.input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); state.revealed ? goNext() : els.check.click(); } });
-document.addEventListener("keydown", e => { if (e.code === "Space" && document.activeElement !== els.input && !state.revealed) { e.preventDefault(); reveal(false); } });
-
-document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => {
-  document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
-  button.classList.add("active");
-  state.system = button.dataset.system;
-  rebuildQueue();
-}));
-
-$("ratingButtons").addEventListener("click", e => {
-  const button = e.target.closest("button[data-rating]");
-  if (!button) return;
-  if (button.dataset.rating === "acertei") state.review.delete(current().id); else state.review.add(current().id);
-  localStorage.setItem("atlas-review", JSON.stringify([...state.review]));
-  updateStats();
-  goNext();
-});
-
-$("reviewButton").addEventListener("click", () => {
-  const reviewCards = cards.filter(c => state.review.has(c.id));
-  if (!reviewCards.length) { showToast("Nenhum cartão marcado para revisão."); return; }
-  document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
-  state.system = "revisao";
-  rebuildQueue(reviewCards);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-$("resetButton").addEventListener("click", () => {
-  if (!confirm("Zerar o progresso e a lista de revisão?")) return;
-  state.seen = 0; state.right = 0; state.streak = 0; state.review.clear();
-  localStorage.removeItem("atlas-review");
-  updateStats(); rebuildQueue(); showToast("Progresso zerado.");
-});
-
-Object.entries({
-  todos: cards.length,
-  tegumentar: cards.filter(c => c.system === "tegumentar").length,
-  articular: cards.filter(c => c.system === "articular").length,
-  osseo: cards.filter(c => c.system === "osseo").length,
-  muscular: cards.filter(c => c.system === "muscular").length
-}).forEach(([key,value]) => { const el = $(`count-${key}`); if (el) el.textContent = value; });
-updateStats();
-rebuildQueue();
+renderMenus();
+start();
